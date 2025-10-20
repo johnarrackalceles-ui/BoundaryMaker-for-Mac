@@ -1,0 +1,8 @@
+torch>=2.2.0
+torchvision>=0.17.0
+segmentation-models-pytorch==0.3.3
+opencv-python
+pillow
+matplotlib
+numpy
+tqdm

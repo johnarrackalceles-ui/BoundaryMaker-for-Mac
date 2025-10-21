@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import segmentation_models_pytorch as smp
 
 # --- 1️⃣ Paths ---
-MODEL_PATH = r"C:\Users\Celes\PycharmProjects\unet_small_gpu\unet_finetuned.pth"
+MODEL_PATH = r"C:\Users\Celes\PycharmProjects\unet_small_gpu\unet_finetuned.pth" # IMPUT YOUR PATH TO WEIGHTS [JUST FOR REFERENCE] 
 TEST_IMAGES_DIR = "data/images/test"
 RESULTS_DIR = "results"
 os.makedirs(RESULTS_DIR, exist_ok=True)

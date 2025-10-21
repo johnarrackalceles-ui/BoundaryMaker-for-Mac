@@ -2,8 +2,8 @@ import os
 import numpy as np
 from PIL import Image
 
-MASK_DIR = "data/data/masks/train" #IMPUT YOUR FILE PATH HERE [JUST FOR REFERENCE] 
-OUT_DIR = "data/data/masks/train_bin" #IMPUT YOUR FILE PATH HERE [JUST FOR REFERENCE]
+MASK_DIR = "data/masks/train" #IMPUT YOUR FILE PATH HERE [JUST FOR REFERENCE] 
+OUT_DIR = "data/masks/train_bin" #IMPUT YOUR FILE PATH HERE [JUST FOR REFERENCE]
 os.makedirs(OUT_DIR, exist_ok=True)
 
 THRESHOLD = 50

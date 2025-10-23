@@ -7,8 +7,11 @@ import torchvision.transforms as transforms
 import matplotlib.pyplot as plt
 import segmentation_models_pytorch as smp
 
+# --- Import contour editor ---
+from contour_editor_gui import ContourEditorGUI
+
 # --- 1️⃣ Paths ---
-MODEL_PATH = r"C:\Users\Celes\PycharmProjects\unet_small_gpu\unet_finetuned.pth" # IMPUT YOUR PATH TO WEIGHTS [JUST FOR REFERENCE] 
+MODEL_PATH = r"C:\Users\Celes\PycharmProjects\unet_small_gpu\unet_finetuned.pth"  # your trained weights
 TEST_IMAGES_DIR = "data/images/test"
 RESULTS_DIR = "results"
 os.makedirs(RESULTS_DIR, exist_ok=True)
@@ -27,7 +30,7 @@ else:
 # --- 3️⃣ Load Model (ResNet34 UNet) ---
 model = smp.Unet(
     encoder_name="resnet34",
-    encoder_weights=None,  # no need to reload imagenet weights
+    encoder_weights=None,
     in_channels=3,
     classes=1
 ).to(device)
@@ -41,7 +44,7 @@ print(f"✅ Model loaded successfully from {MODEL_PATH}")
 transform = transforms.Compose([transforms.ToTensor()])
 
 # --- 6️⃣ Inference Loop ---
-test_images = [f for f in os.listdir(TEST_IMAGES_DIR) if f.endswith((".png", ".jpg", ".jpeg"))]
+test_images = [f for f in os.listdir(TEST_IMAGES_DIR) if f.lower().endswith((".png", ".jpg", ".jpeg"))]
 
 for img_name in test_images:
     img_path = os.path.join(TEST_IMAGES_DIR, img_name)
@@ -61,13 +64,43 @@ for img_name in test_images:
     img_cv = cv2.cvtColor(img_cv, cv2.COLOR_RGB2BGR)
     cv2.drawContours(img_cv, contours, -1, (0, 0, 255), 2)
 
+    # --- 🪟 Open Windows-style interactive contour editor ---
+    print("🖋 Launching interactive contour editor window...")
+    editor = ContourEditorGUI(img_cv.copy(), contours)
+    edited_contours = editor.start()  # blocks until user saves or cancels
+
+    # Use edited contours if available
+    if edited_contours and len(edited_contours) > 0:
+        contours = edited_contours
+        print(f"✅ User edited {len(contours)} contours successfully.")
+    else:
+        print("⚠️ Contours unchanged or edit canceled.")
+
+    # --- Re-draw final contours ---
+    final_img = np.array(image)
+    final_img = cv2.cvtColor(final_img, cv2.COLOR_RGB2BGR)
+    cv2.drawContours(final_img, contours, -1, (0, 0, 255), 2)
+
     # --- Save Results ---
-    cv2.imwrite(os.path.join(RESULTS_DIR, img_name), img_cv)
-    print(f"Saved result to {os.path.join(RESULTS_DIR, img_name)}")
+    result_path = os.path.join(RESULTS_DIR, img_name)
+    cv2.imwrite(result_path, final_img)
+    print(f"💾 Saved final result to {result_path}")
 
     # --- Preview ---
-    plt.figure(figsize=(15,5))
-    plt.subplot(1,3,1); plt.title("Original"); plt.imshow(image); plt.axis("off")
-    plt.subplot(1,3,2); plt.title("Predicted Mask"); plt.imshow(mask_clean, cmap="gray"); plt.axis("off")
-    plt.subplot(1,3,3); plt.title("Overlay"); plt.imshow(cv2.cvtColor(img_cv, cv2.COLOR_BGR2RGB)); plt.axis("off")
+    plt.figure(figsize=(15, 5))
+    plt.subplot(1, 3, 1)
+    plt.title("Original")
+    plt.imshow(image)
+    plt.axis("off")
+
+    plt.subplot(1, 3, 2)
+    plt.title("Predicted Mask")
+    plt.imshow(mask_clean, cmap="gray")
+    plt.axis("off")
+
+    plt.subplot(1, 3, 3)
+    plt.title("Final Overlay (After Edit)")
+    plt.imshow(cv2.cvtColor(final_img, cv2.COLOR_BGR2RGB))
+    plt.axis("off")
+
     plt.show()

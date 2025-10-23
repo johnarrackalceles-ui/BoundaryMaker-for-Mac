@@ -106,6 +106,9 @@ Developed and Fine-tuned with the collaboration of
 ## License
 MIT License 2025
 
+## For UNet Model Pretrained Weights visit: 
+https://drive.google.com/file/d/1ehdq3NOiItEMSd8pxZH0imdzm8H8CDwg/view?usp=drive_link
+Download the weights and imput them into the folder named /models. This part is essential for the model to work properly.
 
 ## ⚙️ Installation
 For Windows
